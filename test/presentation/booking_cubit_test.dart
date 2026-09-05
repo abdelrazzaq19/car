@@ -18,14 +18,16 @@ const _car = Car(
 );
 
 class _FakeAuth implements AuthRepository {
-  final String uid;
+  static const uid = 'u1';
+
   final Object? error;
   int signInCalls = 0;
 
-  _FakeAuth({this.uid = 'u1', this.error});
+  _FakeAuth({this.error});
 
   @override
   String? get currentUserId => uid;
+
 
   @override
   Future<String> ensureSignedIn() async {

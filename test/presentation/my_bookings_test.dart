@@ -78,7 +78,7 @@ class _FakeBookings implements BookingRepository {
       throw UnimplementedError();
 }
 
-MyBookingsCubit cubitWith(_FakeBookings bookings) {
+MyBookingsCubit _cubitWith(_FakeBookings bookings) {
   return MyBookingsCubit(
     bookings: bookings,
     auth: _FakeAuth(),
@@ -86,7 +86,7 @@ MyBookingsCubit cubitWith(_FakeBookings bookings) {
   );
 }
 
-Future<void> pumpView(WidgetTester tester, MyBookingsCubit cubit) async {
+Future<void> _pumpView(WidgetTester tester, MyBookingsCubit cubit) async {
   await tester.pumpWidget(
     BlocProvider.value(
       value: cubit,
@@ -102,7 +102,7 @@ Future<void> pumpView(WidgetTester tester, MyBookingsCubit cubit) async {
 void main() {
   group('splitting', () {
     test('a future confirmed booking is upcoming', () async {
-      final cubit = cubitWith(
+      final cubit = _cubitWith(
         _FakeBookings([booking(id: 'b1', startOffset: 1, endOffset: 4)]),
       );
 
@@ -114,7 +114,7 @@ void main() {
     });
 
     test('a finished booking is past', () async {
-      final cubit = cubitWith(
+      final cubit = _cubitWith(
         _FakeBookings([booking(id: 'b1', startOffset: -10, endOffset: -5)]),
       );
 
@@ -126,7 +126,7 @@ void main() {
     });
 
     test('a cancelled future booking is past, not upcoming', () async {
-      final cubit = cubitWith(
+      final cubit = _cubitWith(
         _FakeBookings([
           booking(
             id: 'b1',
@@ -145,7 +145,7 @@ void main() {
     });
 
     test('a booking running right now is upcoming', () async {
-      final cubit = cubitWith(
+      final cubit = _cubitWith(
         _FakeBookings([booking(id: 'b1', startOffset: -1, endOffset: 2)]),
       );
 
@@ -155,7 +155,7 @@ void main() {
     });
 
     test('upcoming is soonest first, past is most recent first', () async {
-      final cubit = cubitWith(
+      final cubit = _cubitWith(
         _FakeBookings([
           booking(id: 'far', startOffset: 20, endOffset: 22),
           booking(id: 'soon', startOffset: 2, endOffset: 4),
@@ -172,7 +172,7 @@ void main() {
     });
 
     test('reports a friendly message on failure', () async {
-      final cubit = cubitWith(
+      final cubit = _cubitWith(
         _FakeBookings([], loadError: Exception('boom')),
       );
 
@@ -186,7 +186,7 @@ void main() {
     test('cancelling reloads and moves the booking to past', () async {
       final repository =
           _FakeBookings([booking(id: 'b1', startOffset: 1, endOffset: 4)]);
-      final cubit = cubitWith(repository);
+      final cubit = _cubitWith(repository);
 
       await cubit.load();
       await cubit.cancel('b1');
@@ -201,11 +201,11 @@ void main() {
   group('view', () {
     testWidgets('shows a booking with its reference and status',
         (tester) async {
-      final cubit = cubitWith(
+      final cubit = _cubitWith(
         _FakeBookings([booking(id: 'b1', startOffset: 1, endOffset: 4)]),
       );
       await cubit.load();
-      await pumpView(tester, cubit);
+      await _pumpView(tester, cubit);
 
       expect(find.text('Tesla Model 3'), findsOneWidget);
       expect(find.text('Confirmed'), findsOneWidget);
@@ -214,9 +214,9 @@ void main() {
     });
 
     testWidgets('shows an empty state when there is nothing', (tester) async {
-      final cubit = cubitWith(_FakeBookings([]));
+      final cubit = _cubitWith(_FakeBookings([]));
       await cubit.load();
-      await pumpView(tester, cubit);
+      await _pumpView(tester, cubit);
 
       expect(find.text('No upcoming bookings'), findsOneWidget);
     });
@@ -224,9 +224,9 @@ void main() {
     testWidgets('cancelling asks first and can be declined', (tester) async {
       final repository =
           _FakeBookings([booking(id: 'b1', startOffset: 1, endOffset: 4)]);
-      final cubit = cubitWith(repository);
+      final cubit = _cubitWith(repository);
       await cubit.load();
-      await pumpView(tester, cubit);
+      await _pumpView(tester, cubit);
 
       await tester.tap(find.text('Cancel booking'));
       await tester.pumpAndSettle();
@@ -242,9 +242,9 @@ void main() {
     testWidgets('confirming the dialog cancels the booking', (tester) async {
       final repository =
           _FakeBookings([booking(id: 'b1', startOffset: 1, endOffset: 4)]);
-      final cubit = cubitWith(repository);
+      final cubit = _cubitWith(repository);
       await cubit.load();
-      await pumpView(tester, cubit);
+      await _pumpView(tester, cubit);
 
       await tester.tap(find.text('Cancel booking'));
       await tester.pumpAndSettle();
@@ -258,7 +258,7 @@ void main() {
     });
 
     testWidgets('a completed booking offers no cancel action', (tester) async {
-      final cubit = cubitWith(
+      final cubit = _cubitWith(
         _FakeBookings([
           booking(
             id: 'b1',
@@ -269,7 +269,7 @@ void main() {
         ]),
       );
       await cubit.load();
-      await pumpView(tester, cubit);
+      await _pumpView(tester, cubit);
 
       expect(find.text('Cancel booking'), findsNothing);
     });
@@ -279,7 +279,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
 
-      final cubit = cubitWith(
+      final cubit = _cubitWith(
         _FakeBookings([
           booking(
             id: 'b1',
@@ -290,7 +290,7 @@ void main() {
         ]),
       );
       await cubit.load();
-      await pumpView(tester, cubit);
+      await _pumpView(tester, cubit);
 
       expect(tester.takeException(), isNull);
     });

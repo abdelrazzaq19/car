@@ -111,7 +111,7 @@ Verify: extend `car_test.dart`; run against seeded data.
 ### T2.1 — Auth
 Depends on: Checkpoint B
 
-- [ ] Anonymous sign-in on launch; `AuthBloc`; an account screen; optional email-link upgrade.
+- [x] Anonymous sign-in on launch; `AuthBloc`; an account screen; optional email-link upgrade.
 
 Acceptance criteria: a `uid` is available before any booking write; the same `uid` survives a restart.
 Verify: sign in, restart, confirm the uid is unchanged.
@@ -119,9 +119,9 @@ Verify: sign in, restart, confirm the uid is unchanged.
 ### T2.2 — Rental period and pricing
 Depends on: T1.4
 
-- [ ] `RentalPeriod` value object with validation (end after start, minimum one day).
-- [ ] `PriceQuote` calculator: base, fees, deposit, total.
-- [ ] A date-range picker sheet on the detail page with a live breakdown.
+- [x] `RentalPeriod` value object with validation (end after start, minimum one day).
+- [x] `PriceQuote` calculator: base, fees, deposit, total.
+- [x] A date-range picker sheet on the detail page with a live breakdown.
 
 Acceptance criteria: a three-day booking at 50 per day yields a base of 150; an end before the start is rejected with a clear message; the breakdown updates as the dates change.
 Verify: unit tests for the calculator, including boundary cases; widget test for the picker.
@@ -129,7 +129,7 @@ Verify: unit tests for the calculator, including boundary cases; widget test for
 ### T2.3 — Booking write and availability
 Depends on: T2.1, T2.2
 
-- [ ] `Booking` model and `BookingRepository`; an overlap query; a `BookingBloc`; a confirmation screen with a reference code.
+- [x] `Booking` model and `BookingRepository`; an overlap query; a `BookingBloc`; a confirmation screen with a reference code.
 
 Acceptance criteria: a booking appears in Firestore with the car id, uid, period, quote and status; a second overlapping booking for the same car is rejected with a clear message.
 Verify: unit tests for the overlap logic; an end-to-end booking against the emulator.
@@ -137,12 +137,12 @@ Verify: unit tests for the overlap logic; an end-to-end booking against the emul
 ### T2.4 — My Bookings
 Depends on: T2.3
 
-- [ ] Upcoming and past tabs, status chips, cancel behind a confirmation dialog.
+- [x] Upcoming and past tabs, status chips, cancel behind a confirmation dialog.
 
 Acceptance criteria: a new booking appears under Upcoming; cancelling sets the status to cancelled and frees the dates for rebooking.
 Verify: book, cancel, rebook the same range.
 
-**Checkpoint C** — the full booking journey works and double-booking is prevented. Pause for review.
+**Checkpoint C — DONE** — the full booking journey works and double-booking is prevented. Pause for review.
 
 ---
 

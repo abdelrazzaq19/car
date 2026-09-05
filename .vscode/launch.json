@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter: Launch App",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "cwd": "d:/flutter_projects/car_rental_app",
+      "args": []
+    },
+    {
+      "name": "Flutter: Attach to App",
+      "type": "dart",
+      "request": "attach",
+      "deviceId": "flutter",
+      "cwd": "d:/flutter_projects/car_rental_app"
+    }
+  ]
+}

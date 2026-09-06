@@ -151,7 +151,7 @@ Verify: book, cancel, rebook the same range.
 ### T3.1 — Search, filter, sort
 Depends on: Checkpoint C
 
-- [ ] `CarQuery` value object; filter events on `CarBloc`; a search bar and a filter sheet.
+- [x] `CarQuery` value object; filter events on `CarBloc`; a search bar and a filter sheet.
 
 Acceptance criteria: typing narrows the list; filters combine; clearing restores the full list; an empty result shows an empty state, not a blank screen.
 Verify: widget tests covering each filter and their combination.
@@ -159,29 +159,33 @@ Verify: widget tests covering each filter and their combination.
 ### T3.2 — Favourites
 Depends on: T2.1
 
-- [ ] A per-user subcollection; a heart toggle on the card; a favourites tab.
+- [x] A per-user subcollection; a heart toggle on the card; a favourites tab.
 
 Acceptance criteria: the toggle persists across restarts and is scoped to the signed-in user.
-Verify: toggle, restart, confirm.
+Verified in tests against a fake repository, including the optimistic rollback
+when the write fails. Not yet verified against live Firestore.
 
 ### T3.3 — Real map
 Depends on: T1.4
 
 - [x] Markers from Firestore locations (done early: the flutter_map v8 migration forced this file open anyway).
-- [ ] User location via geolocator with permission handling; distance sort; an "open in maps" action.
+- [x] User location via geolocator with permission handling; distance sort; an "open in maps" action.
 - [x] Remove the fabricated `MoreCard` data; source similar cars from the repository.
 
 Acceptance criteria: each car appears at its own coordinates; denying the location permission degrades gracefully rather than crashing; no fabricated model strings remain.
-Verify: run with the permission granted and denied; grep for `+ '-1'`.
+Denial and permanent-block paths are covered by tests over a fake location
+service. A run on a real device with the permission granted and denied has NOT
+been done.
 
 ### T3.4 — Loading, error and offline states
 Depends on: Checkpoint C
 
 - [x] Skeleton loaders; pull-to-refresh; a typed error mapper with retry; Firestore offline persistence.
-- [ ] A connectivity banner.
+- [x] A connectivity banner.
 
 Acceptance criteria: no raw `e.toString()` reaches the UI; airplane mode shows cached cars plus a banner; retry re-fetches.
-Verify: airplane-mode run; force an error and confirm retry works.
+The error mapping and retry are covered by tests. The airplane-mode run on a
+real device has NOT been done.
 
 ### T3.5 — Images
 Depends on: T1.4
@@ -189,14 +193,27 @@ Depends on: T1.4
 - [x] `cached_network_image` with placeholder and error fallback; a `Hero` transition from list to detail.
 
 Acceptance criteria: a broken URL shows the fallback rather than a red error box; the hero animation does not flicker.
-Verify: seed a broken URL; record the transition.
+The fallback path is in code; the broken-URL run and the hero recording have NOT
+been done.
 
 ### T3.6 — Accessibility
 Depends on: T3.1 to T3.5
 
-- [ ] Semantics labels on icon-only controls; 48dp minimum tap targets; a contrast check; text-scale testing.
+- [x] Semantics labels on icon-only controls (tooltips, asserted in tests).
+- [x] 48dp minimum tap targets (asserted in tests).
+- [x] Text-scale testing at 2.0 and a 320px width (asserted in tests).
+- [ ] Contrast check on both themes — NOT DONE. Colours come from a single M3
+      seed, which gives reasonable contrast by construction, but no checker has
+      been run over the rendered screens.
+- [ ] TalkBack pass on a device — NOT DONE. Only the automated semantics
+      assertions have run.
 
-Acceptance criteria: every interactive element is reachable by TalkBack with a meaningful label; no layout breaks at text scale 2.0.
-Verify: TalkBack pass; run at text scale 2.0; a contrast checker on both themes.
+A genuine defect was found and fixed here: the card's `Semantics` label was
+swallowing the favourite button, so a screen reader could not reach the heart
+separately. The heart is now a sibling of the tappable card, not a descendant.
 
-**Checkpoint D** — final pass. Analyze clean, tests green, both themes, phone and tablet, offline verified.
+**Checkpoint D — code complete, device verification outstanding.**
+Analyze reports zero issues, 162 tests pass, and the web target builds. What has
+NOT been verified: a run against live Firestore, airplane-mode behaviour,
+TalkBack, and a contrast checker. Those need a device and a configured Firebase
+project with anonymous sign-in enabled.

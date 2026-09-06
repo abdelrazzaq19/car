@@ -46,6 +46,9 @@ dependencies:
   # Added for the modernization work.
   firebase_auth: ^6.4.0
   equatable: ^2.0.7
+  geolocator: ^14.0.2
+  url_launcher: ^6.3.2
+  connectivity_plus: ^7.0.0
   google_fonts: ^6.3.2
   shared_preferences: ^2.5.3
   intl: ^0.20.3

@@ -9,12 +9,17 @@ class StatusView extends StatelessWidget {
   final String body;
   final VoidCallback? onRetry;
 
+  /// Defaults to "Try again"; set when the action is not a retry, e.g.
+  /// "Clear filters".
+  final String? actionLabel;
+
   const StatusView({
     super.key,
     required this.icon,
     required this.title,
     required this.body,
     this.onRetry,
+    this.actionLabel,
   });
 
   @override
@@ -53,8 +58,10 @@ class StatusView extends StatelessWidget {
                     const SizedBox(height: AppSpacing.lg),
                     FilledButton.icon(
                       onPressed: onRetry,
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Try again'),
+                      icon: Icon(
+                        actionLabel == null ? Icons.refresh : Icons.filter_alt_off,
+                      ),
+                      label: Text(actionLabel ?? 'Try again'),
                     ),
                   ],
                 ],

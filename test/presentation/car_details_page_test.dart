@@ -15,7 +15,7 @@ class _StubCarBloc extends Bloc<CarEvent, CarState> implements CarBloc {
   }
 
   @override
-  Never get getCars => throw UnimplementedError();
+  Never noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
 const _tesla = Car(

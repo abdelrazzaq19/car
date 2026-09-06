@@ -91,3 +91,36 @@ match /bookings/{id} {
 ```
 
 Anonymous sign-in must be enabled in the Firebase console for booking to work.
+
+## Collection `users/{uid}/favourites`
+
+One document per saved car, keyed by the car id. Keying by car id makes the
+toggle a single document write and needs no query to check membership.
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `savedAt` | timestamp | Server timestamp, for future "recently saved" ordering. |
+
+The document id is the car id; the body carries nothing else.
+
+### Suggested security rules
+
+```
+match /users/{uid}/favourites/{carId} {
+  allow read, write: if request.auth != null && request.auth.uid == uid;
+}
+```
+
+Favourites are a nicety, not a gate: if reading them fails, the car list still
+loads with nothing saved rather than showing an error.
+
+## Device permissions
+
+Distance sorting and the "my location" pin use `geolocator`. Both are optional —
+denying them only disables distance sorting, and the reason is shown in the list.
+
+- **Android** (`android/app/src/main/AndroidManifest.xml`): `ACCESS_COARSE_LOCATION`,
+  `ACCESS_FINE_LOCATION`, plus `<queries>` entries for the `geo` and `https`
+  schemes, which Android 11+ requires before `url_launcher` can see a maps app.
+- **iOS** (`ios/Runner/Info.plist`): `NSLocationWhenInUseUsageDescription`, and
+  `LSApplicationQueriesSchemes` for `comgooglemaps` and `maps`.

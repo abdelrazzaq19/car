@@ -1,9 +1,12 @@
 import 'package:car_rental_app/core/theme/app_tokens.dart';
 import 'package:car_rental_app/data/models/car.dart';
 import 'package:car_rental_app/presentation/pages/car_details_page.dart';
+import 'package:car_rental_app/presentation/bloc/bloc/car_bloc.dart';
+import 'package:car_rental_app/presentation/bloc/bloc/car_event.dart';
 import 'package:car_rental_app/presentation/widgets/car_image.dart';
 import 'package:car_rental_app/presentation/widgets/spec_chip.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CarCard extends StatelessWidget {
   final Car car;
@@ -12,7 +15,15 @@ class CarCard extends StatelessWidget {
   /// would be a navigation loop.
   final bool interactive;
 
-  const CarCard({super.key, required this.car, this.interactive = true});
+  /// Null when the card is shown outside a [CarBloc], e.g. in a test harness.
+  final bool? isFavourite;
+
+  const CarCard({
+    super.key,
+    required this.car,
+    this.interactive = true,
+    this.isFavourite,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +57,7 @@ class CarCard extends StatelessWidget {
                 if (car.rating > 0)
                   Positioned(
                     top: 0,
-                    right: 0,
+                    right: isFavourite == null ? 0 : kMinTapTarget,
                     child: _Badge(
                       label: '${car.rating.toStringAsFixed(1)} ★',
                       background: scheme.secondaryContainer,
@@ -115,21 +126,41 @@ class CarCard extends StatelessWidget {
       ),
     );
 
-    if (!interactive) return card;
+    final tappable = interactive
+        ? Semantics(
+            button: true,
+            label:
+                '${car.model}, \$${car.pricePerDay.toStringAsFixed(0)} per day',
+            child: InkWell(
+              borderRadius: AppRadius.lgAll,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => CarDetailsPage(car: car)),
+                );
+              },
+              child: card,
+            ),
+          )
+        : card;
 
-    return Semantics(
-      button: true,
-      label: '${car.model}, \$${car.pricePerDay.toStringAsFixed(0)} per day',
-      child: InkWell(
-        borderRadius: AppRadius.lgAll,
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => CarDetailsPage(car: car)),
-          );
-        },
-        child: card,
-      ),
+    if (isFavourite == null) return tappable;
+
+    // The heart is a sibling of the tappable card, not a descendant: nested
+    // inside, its own semantics were swallowed by the card's label and a
+    // screen reader could not reach it separately.
+    return Stack(
+      children: [
+        tappable,
+        Positioned(
+          top: AppSpacing.xs,
+          right: AppSpacing.xs,
+          child: _FavouriteButton(
+            carId: car.id,
+            isFavourite: isFavourite!,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -162,6 +193,36 @@ class _Badge extends StatelessWidget {
             .textTheme
             .labelLarge
             ?.copyWith(color: foreground, fontSize: 12),
+      ),
+    );
+  }
+}
+
+
+class _FavouriteButton extends StatelessWidget {
+  final String carId;
+  final bool isFavourite;
+
+  const _FavouriteButton({
+    required this.carId,
+    required this.isFavourite,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return IconButton(
+      // 48dp minimum, so the heart is reachable without hitting the card.
+      constraints: const BoxConstraints(
+        minWidth: kMinTapTarget,
+        minHeight: kMinTapTarget,
+      ),
+      tooltip: isFavourite ? 'Remove from saved' : 'Save this car',
+      onPressed: () => context.read<CarBloc>().add(ToggleFavourite(carId)),
+      icon: Icon(
+        isFavourite ? Icons.favorite : Icons.favorite_border,
+        color: isFavourite ? scheme.error : scheme.onSurfaceVariant,
       ),
     );
   }

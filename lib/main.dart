@@ -1,10 +1,10 @@
+import 'package:car_rental_app/core/router/app_router.dart';
 import 'package:car_rental_app/core/theme/app_theme.dart';
 import 'package:car_rental_app/core/theme/theme_cubit.dart';
 import 'package:car_rental_app/firebase_options.dart';
 import 'package:car_rental_app/injection_container.dart';
 import 'package:car_rental_app/presentation/bloc/bloc/car_bloc.dart';
 import 'package:car_rental_app/presentation/bloc/bloc/car_event.dart';
-import 'package:car_rental_app/presentation/pages/onboarding_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +36,9 @@ class MyApp extends StatelessWidget {
 
   const MyApp({super.key, required this.preferences});
 
+  // Built once and held, so a rebuild does not reset the navigation stack.
+  static final _router = buildRouter();
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -45,13 +48,13 @@ class MyApp extends StatelessWidget {
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) {
-          return MaterialApp(
+          return MaterialApp.router(
             debugShowCheckedModeBanner: false,
             title: 'Car Rental',
             theme: AppTheme.light(),
             darkTheme: AppTheme.dark(),
             themeMode: themeMode,
-            home: const OnboardingPage(),
+            routerConfig: _router,
           );
         },
       ),

@@ -1,8 +1,9 @@
 import 'package:car_rental_app/core/theme/app_tokens.dart';
+import 'package:car_rental_app/core/router/app_router.dart';
 import 'package:car_rental_app/data/models/booking.dart';
 import 'package:car_rental_app/domain/entities/price_quote.dart';
-import 'package:car_rental_app/presentation/pages/my_bookings_page.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class BookingConfirmationPage extends StatelessWidget {
@@ -88,18 +89,12 @@ class BookingConfirmationPage extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.lg),
           FilledButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const MyBookingsPage()),
-              );
-            },
+            onPressed: () => context.go(Routes.bookings),
             child: const Text('View my bookings'),
           ),
           const SizedBox(height: AppSpacing.sm),
           OutlinedButton(
-            onPressed: () =>
-                Navigator.of(context).popUntil((route) => route.isFirst),
+            onPressed: () => context.go(Routes.cars),
             child: const Text('Back to the start'),
           ),
         ],

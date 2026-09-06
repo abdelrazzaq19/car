@@ -1,13 +1,13 @@
 import 'package:car_rental_app/core/theme/app_tokens.dart';
+import 'package:car_rental_app/core/router/app_router.dart';
 import 'package:car_rental_app/data/models/car.dart';
 import 'package:car_rental_app/presentation/bloc/bloc/car_bloc.dart';
 import 'package:car_rental_app/presentation/bloc/bloc/car_state.dart';
-import 'package:car_rental_app/presentation/pages/maps_detail_page.dart';
-import 'package:car_rental_app/presentation/pages/my_bookings_page.dart';
 import 'package:car_rental_app/presentation/widgets/book_now_button.dart';
 import 'package:car_rental_app/presentation/widgets/car_card.dart';
 import 'package:car_rental_app/presentation/widgets/more_card.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CarDetailsPage extends StatelessWidget {
@@ -26,10 +26,7 @@ class CarDetailsPage extends StatelessWidget {
           IconButton(
             tooltip: 'My bookings',
             icon: const Icon(Icons.event_note_outlined),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const MyBookingsPage()),
-            ),
+            onPressed: () => context.push(Routes.bookings),
           ),
         ],
       ),
@@ -76,12 +73,7 @@ class _MapPreview extends StatelessWidget {
       label: 'Open the map showing where this car is parked',
       child: InkWell(
         borderRadius: AppRadius.lgAll,
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => MapsDetailPage(car: car)),
-          );
-        },
+        onTap: () => context.push(Routes.carMapFor(car.id)),
         child: ClipRRect(
           borderRadius: AppRadius.lgAll,
           child: Stack(

@@ -1,11 +1,12 @@
+import 'package:car_rental_app/core/router/app_router.dart';
 import 'package:car_rental_app/core/theme/app_tokens.dart';
 import 'package:car_rental_app/data/models/car.dart';
 import 'package:car_rental_app/domain/entities/rental_period.dart';
 import 'package:car_rental_app/presentation/bloc/booking/booking_cubit.dart';
-import 'package:car_rental_app/presentation/pages/booking_confirmation_page.dart';
 import 'package:car_rental_app/presentation/widgets/price_breakdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 /// Date selection and price, shown as a bottom sheet over the car.
@@ -22,15 +23,14 @@ class BookingSheet extends StatelessWidget {
 
     return BlocConsumer<BookingCubit, BookingState>(
       listener: (context, state) {
-        if (state is BookingConfirmed) {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => BookingConfirmationPage(booking: state.booking),
-            ),
-          );
-        }
+        if (state is! BookingConfirmed) return;
+
+        // The router has to be captured before the sheet closes: popping
+        // deactivates this context, and reading it afterwards would throw.
+        final router = GoRouter.of(context);
+
+        Navigator.pop(context);
+        router.push(Routes.bookingConfirmed, extra: state.booking);
       },
       builder: (context, state) {
         final cubit = context.read<BookingCubit>();

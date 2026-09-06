@@ -1,3 +1,4 @@
+import 'package:car_rental_app/core/router/app_router.dart';
 import 'package:car_rental_app/core/theme/app_tokens.dart';
 import 'package:car_rental_app/core/theme/theme_cubit.dart';
 import 'package:car_rental_app/data/models/car.dart';
@@ -6,13 +7,13 @@ import 'package:car_rental_app/presentation/bloc/bloc/car_bloc.dart';
 import 'package:car_rental_app/presentation/bloc/bloc/car_event.dart';
 import 'package:car_rental_app/presentation/bloc/bloc/car_state.dart';
 import 'package:car_rental_app/presentation/pages/filter_sheet.dart';
-import 'package:car_rental_app/presentation/pages/my_bookings_page.dart';
 import 'package:car_rental_app/presentation/widgets/car_card.dart';
 import 'package:car_rental_app/presentation/widgets/car_card_skeleton.dart';
 import 'package:car_rental_app/presentation/widgets/car_search_bar.dart';
 import 'package:car_rental_app/presentation/widgets/connectivity_banner.dart';
 import 'package:car_rental_app/presentation/widgets/status_view.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CarListScreen extends StatelessWidget {
@@ -29,10 +30,7 @@ class CarListScreen extends StatelessWidget {
             IconButton(
               tooltip: 'My bookings',
               icon: const Icon(Icons.event_note_outlined),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const MyBookingsPage()),
-              ),
+              onPressed: () => context.push(Routes.bookings),
             ),
             BlocBuilder<ThemeCubit, ThemeMode>(
               builder: (context, mode) {

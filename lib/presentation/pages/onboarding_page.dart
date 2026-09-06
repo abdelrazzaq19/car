@@ -1,6 +1,7 @@
 import 'package:car_rental_app/core/theme/app_tokens.dart';
-import 'package:car_rental_app/presentation/pages/car_list_screen.dart';
+import 'package:car_rental_app/core/router/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key});
@@ -60,14 +61,7 @@ class OnboardingPage extends StatelessWidget {
                         backgroundColor: Colors.white,
                         foregroundColor: const Color(0xff17161C),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const CarListScreen(),
-                          ),
-                        );
-                      },
+                      onPressed: () => context.push(Routes.cars),
                       child: const Text("Let's go"),
                     ),
                   ),

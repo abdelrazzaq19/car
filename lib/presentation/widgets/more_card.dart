@@ -1,8 +1,9 @@
 import 'package:car_rental_app/core/theme/app_tokens.dart';
+import 'package:car_rental_app/core/router/app_router.dart';
 import 'package:car_rental_app/data/models/car.dart';
-import 'package:car_rental_app/presentation/pages/car_details_page.dart';
 import 'package:car_rental_app/presentation/widgets/car_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// A compact row used for the "similar cars" list on the details page.
 ///
@@ -23,12 +24,9 @@ class MoreCard extends StatelessWidget {
       label: '${car.model}, \$${car.pricePerDay.toStringAsFixed(0)} per day',
       child: InkWell(
         borderRadius: AppRadius.mdAll,
-        onTap: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => CarDetailsPage(car: car)),
-          );
-        },
+        // Replaces the current detail page, so tapping through several
+        // similar cars does not build a deep back stack.
+        onTap: () => context.pushReplacement(Routes.carDetailsFor(car.id)),
         child: Ink(
           padding: const EdgeInsets.all(AppSpacing.sm + 4),
           decoration: BoxDecoration(

@@ -28,7 +28,6 @@ class _FakeAuth implements AuthRepository {
   @override
   String? get currentUserId => uid;
 
-
   @override
   Future<String> ensureSignedIn() async {
     signInCalls++;
@@ -200,7 +199,8 @@ void main() {
       final cubit = build(
         bookings: _FakeBookings(
           throwOnCreate: CarUnavailableException(
-            RentalPeriod.stored(start: _now, end: _now.add(const Duration(days: 2))),
+            RentalPeriod.stored(
+                start: _now, end: _now.add(const Duration(days: 2))),
           ),
         ),
       );

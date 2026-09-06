@@ -60,9 +60,8 @@ class _FakeBookings implements BookingRepository {
   Future<void> cancel(String bookingId) async {
     cancelled.add(bookingId);
     stored = stored
-        .map((b) => b.id == bookingId
-            ? b.copyWith(status: BookingStatus.cancelled)
-            : b)
+        .map((b) =>
+            b.id == bookingId ? b.copyWith(status: BookingStatus.cancelled) : b)
         .toList();
   }
 

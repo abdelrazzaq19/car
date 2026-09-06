@@ -22,8 +22,12 @@ class FirebaseBookingDataSource {
         .where('end', isGreaterThan: Timestamp.fromDate(from))
         .get();
 
+    // Date-aware: a booking whose dates have passed no longer holds them, even
+    // though nothing ever wrote `completed` to it.
+    final now = DateTime.now();
+
     return _parse(snapshot)
-        .where((booking) => booking.status.blocksAvailability)
+        .where((booking) => booking.blocksAvailabilityAt(now))
         .toList();
   }
 
@@ -36,8 +40,7 @@ class FirebaseBookingDataSource {
   }
 
   Future<List<Booking>> forUser(String userId) async {
-    final snapshot =
-        await _bookings.where('userId', isEqualTo: userId).get();
+    final snapshot = await _bookings.where('userId', isEqualTo: userId).get();
 
     final bookings = _parse(snapshot);
     // Sorted client-side so the query needs no composite index.

@@ -13,7 +13,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 String failureMessage(Object error, {String action = 'loading cars'}) {
   if (error is FirebaseException) {
     return switch (error.code) {
-      'unavailable' || 'network-request-failed' =>
+      'unavailable' ||
+      'network-request-failed' =>
         'You appear to be offline. Check your connection and try again.',
       'permission-denied' =>
         'You do not have permission to do that. Please sign in again.',

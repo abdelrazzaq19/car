@@ -124,3 +124,48 @@ denying them only disables distance sorting, and the reason is shown in the list
   schemes, which Android 11+ requires before `url_launcher` can see a maps app.
 - **iOS** (`ios/Runner/Info.plist`): `NSLocationWhenInUseUsageDescription`, and
   `LSApplicationQueriesSchemes` for `comgooglemaps` and `maps`.
+
+## Owner fields on `cars`
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `ownerName` | string | Shown on the details page. Absent shows "Listed by the fleet" rather than inventing a person. |
+| `ownerPhotoUrl` | string | Falls back to the bundled avatar. |
+| `ownerVerified` | boolean | Defaults to `false`; drives the verified badge. |
+
+## Deploying the security rules
+
+Rules live in `firestore.rules` and are wired into `firebase.json`. **They are not
+deployed by building the app** — until you run the deploy, the database uses
+whatever rules the console currently has, which for a new project is often open.
+
+```bash
+firebase deploy --only firestore:rules,firestore:indexes
+```
+
+What the rules enforce:
+
+- `cars` is world-readable and client-writable by nobody. Listings are managed
+  from the console or the seed script, both of which use the Admin SDK and
+  bypass rules.
+- A booking is readable only by the user who made it.
+- A booking may only be created in the user's own name, in `pending` or
+  `confirmed`, with non-negative amounts and `start` before `end`. Without the
+  status check a client could write `completed` and quietly free a car it still
+  holds.
+- The only permitted update is setting `status` to `cancelled`. Dates, amounts,
+  `carId` and `userId` are immutable once written, so a client cannot rewrite
+  the price of a booking it already holds.
+- Deletes are refused: cancelling sets a status, it does not erase history.
+- Anything not named is denied.
+
+## Booking status without a server
+
+Nothing writes `active` or `completed` — there is no scheduled job — so
+`Booking.statusAt(now)` derives them from the dates, and
+`blocksAvailabilityAt(now)` uses that. Before this, a rental that finished last
+year still read "Confirmed" and kept holding its dates against a rebooking.
+
+A server-side job would still be worth having if you need the stored status to
+be correct for reporting or for anything reading Firestore directly, since the
+derivation only happens in the app.

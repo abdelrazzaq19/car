@@ -86,8 +86,7 @@ void main() {
     expect(button.onPressed, isNull);
   });
 
-  testWidgets('lists real similar cars, never fabricated ones',
-      (tester) async {
+  testWidgets('lists real similar cars, never fabricated ones', (tester) async {
     await _pump(tester, _tesla, all: [_tesla, _audi]);
 
     // The section sits below the fold, and the list builds lazily.

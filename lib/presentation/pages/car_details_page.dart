@@ -46,7 +46,7 @@ class CarDetailsPage extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           Text('Owner', style: theme.textTheme.titleMedium),
           const SizedBox(height: AppSpacing.sm),
-          const _OwnerTile(),
+          _OwnerTile(car: car),
           const SizedBox(height: AppSpacing.lg),
           _SimilarCars(current: car),
         ],
@@ -133,11 +133,14 @@ class _MapPreview extends StatelessWidget {
 }
 
 class _OwnerTile extends StatelessWidget {
-  const _OwnerTile();
+  final Car car;
+
+  const _OwnerTile({required this.car});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final name = car.ownerName;
 
     return Card(
       child: ListTile(
@@ -145,19 +148,26 @@ class _OwnerTile extends StatelessWidget {
           horizontal: AppSpacing.md,
           vertical: AppSpacing.sm,
         ),
-        leading: const CircleAvatar(
+        leading: CircleAvatar(
           radius: 26,
-          backgroundImage: AssetImage('assets/user.png'),
+          backgroundImage: car.ownerPhotoUrl != null
+              ? NetworkImage(car.ownerPhotoUrl!)
+              : const AssetImage('assets/user.png') as ImageProvider,
         ),
-        title: Text('naumanbutt2002', style: theme.textTheme.titleMedium),
+        title: Text(
+          // No invented person when the listing does not name one.
+          name ?? 'Listed by the fleet',
+          style: theme.textTheme.titleMedium,
+        ),
         subtitle: Text(
-          'Verified host · Responds within an hour',
+          car.ownerVerified
+              ? 'Verified host'
+              : 'Contact details shared after booking',
           style: theme.textTheme.bodyMedium,
         ),
-        trailing: Icon(
-          Icons.verified_outlined,
-          color: theme.colorScheme.primary,
-        ),
+        trailing: car.ownerVerified
+            ? Icon(Icons.verified_outlined, color: theme.colorScheme.primary)
+            : null,
       ),
     );
   }

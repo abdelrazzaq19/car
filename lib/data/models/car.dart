@@ -77,6 +77,12 @@ class Car extends Equatable {
   final int reviewCount;
   final bool available;
 
+  /// Who is renting the car out. Null when the document does not say, in which
+  /// case the UI shows a neutral placeholder rather than inventing a person.
+  final String? ownerName;
+  final String? ownerPhotoUrl;
+  final bool ownerVerified;
+
   const Car({
     this.id = '',
     required this.model,
@@ -92,6 +98,9 @@ class Car extends Equatable {
     this.rating = 0,
     this.reviewCount = 0,
     this.available = true,
+    this.ownerName,
+    this.ownerPhotoUrl,
+    this.ownerVerified = false,
   });
 
   factory Car.fromMap(Map<String, dynamic> map, {String id = ''}) {
@@ -117,6 +126,10 @@ class Car extends Equatable {
       rating: _toDouble(map['rating']),
       reviewCount: _toDouble(map['reviewCount']).round(),
       available: map['available'] is bool ? map['available'] as bool : true,
+      ownerName: _toNullableString(map['ownerName']),
+      ownerPhotoUrl: _toNullableString(map['ownerPhotoUrl']),
+      ownerVerified:
+          map['ownerVerified'] is bool ? map['ownerVerified'] as bool : false,
     );
   }
 
@@ -134,19 +147,24 @@ class Car extends Equatable {
       'rating': rating,
       'reviewCount': reviewCount,
       'available': available,
+      if (ownerName != null) 'ownerName': ownerName,
+      if (ownerPhotoUrl != null) 'ownerPhotoUrl': ownerPhotoUrl,
+      'ownerVerified': ownerVerified,
     };
   }
 
   bool get hasLocation => latitude != null && longitude != null;
 
   /// Litres for a combustion car, kWh for an electric one.
-  String get capacityLabel =>
-      fuelType.isElectric ? '${_trim(fuelCapacity)} kWh' : '${_trim(fuelCapacity)} L';
+  String get capacityLabel => fuelType.isElectric
+      ? '${_trim(fuelCapacity)} kWh'
+      : '${_trim(fuelCapacity)} L';
 
   String get rangeLabel => '${_trim(distance)} km';
 
-  static String _trim(double value) =>
-      value == value.roundToDouble() ? value.toStringAsFixed(0) : value.toStringAsFixed(1);
+  static String _trim(double value) => value == value.roundToDouble()
+      ? value.toStringAsFixed(0)
+      : value.toStringAsFixed(1);
 
   /// Coerces `int`, `double`, numeric `String` and `null` into a `double`.
   static double _toDouble(Object? value, {double fallback = 0}) {
@@ -188,5 +206,8 @@ class Car extends Equatable {
         rating,
         reviewCount,
         available,
+        ownerName,
+        ownerPhotoUrl,
+        ownerVerified,
       ];
 }

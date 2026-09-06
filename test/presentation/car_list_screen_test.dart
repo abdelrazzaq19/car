@@ -149,8 +149,7 @@ void main() {
       expect(find.byType(CarCard), findsNWidgets(2));
     });
 
-    testWidgets('an empty source list says so, not "no match"',
-        (tester) async {
+    testWidgets('an empty source list says so, not "no match"', (tester) async {
       await _pump(tester, bloc: _bloc(cars: const []));
 
       expect(find.text('No cars available'), findsOneWidget);

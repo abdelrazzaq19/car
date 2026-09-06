@@ -142,7 +142,8 @@ class _DateField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final period = state is BookingQuoted ? (state as BookingQuoted).period : null;
+    final period =
+        state is BookingQuoted ? (state as BookingQuoted).period : null;
 
     return InkWell(
       borderRadius: AppRadius.mdAll,

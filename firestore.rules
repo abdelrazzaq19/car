@@ -1,0 +1,71 @@
+rules_version = '2';
+
+// Deploy with:  firebase deploy --only firestore:rules
+//
+// Default posture: deny everything, then open the narrowest paths the app
+// actually uses. Anything not matched below is refused.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    // The catalogue is public to read and never written from the client.
+    // Listings are managed from the console or the seed script, both of which
+    // use the Admin SDK and bypass these rules.
+    match /cars/{carId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /bookings/{bookingId} {
+      // A booking is visible only to the user who made it.
+      allow read: if signedIn() && isOwner(resource.data.userId);
+
+      // A client may only create a booking in its own name, and only in a
+      // state it is allowed to start from. Without the status check a client
+      // could write `completed` and quietly free a car it still holds.
+      allow create: if signedIn()
+                    && isOwner(request.resource.data.userId)
+                    && request.resource.data.status in ['pending', 'confirmed']
+                    && request.resource.data.totalCents is int
+                    && request.resource.data.totalCents >= 0
+                    && request.resource.data.depositCents is int
+                    && request.resource.data.depositCents >= 0
+                    && request.resource.data.start is timestamp
+                    && request.resource.data.end is timestamp
+                    && request.resource.data.start < request.resource.data.end;
+
+      // Cancelling is the only update the app performs. Money, dates and
+      // ownership are immutable once written, so a client cannot rewrite the
+      // price of a booking it already holds.
+      allow update: if signedIn()
+                    && isOwner(resource.data.userId)
+                    && request.resource.data.userId == resource.data.userId
+                    && request.resource.data.carId == resource.data.carId
+                    && request.resource.data.start == resource.data.start
+                    && request.resource.data.end == resource.data.end
+                    && request.resource.data.totalCents == resource.data.totalCents
+                    && request.resource.data.depositCents == resource.data.depositCents
+                    && request.resource.data.status == 'cancelled';
+
+      // History is kept: cancelling sets a status, it does not delete.
+      allow delete: if false;
+    }
+
+    // Saved cars, one document per car id, private to the user.
+    match /users/{userId}/favourites/{carId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // Anything not named above is denied.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -113,8 +113,7 @@ class _AllCarsTab extends StatelessWidget {
             ],
           ),
         ),
-        if (state.locationFailure != null)
-          _LocationNotice(state: state),
+        if (state.locationFailure != null) _LocationNotice(state: state),
         Expanded(
           child: state.cars.isEmpty
               ? StatusView(

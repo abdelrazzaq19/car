@@ -140,7 +140,8 @@ void main() {
 
     test('defaults available to true when the field is absent', () {
       expect(Car.fromMap({'model': 'a'}).available, isTrue);
-      expect(Car.fromMap({'model': 'a', 'available': false}).available, isFalse);
+      expect(
+          Car.fromMap({'model': 'a', 'available': false}).available, isFalse);
     });
 
     test('compares by value', () {
@@ -174,6 +175,35 @@ void main() {
       expect(restored.distance, car.distance);
       expect(restored.fuelCapacity, car.fuelCapacity);
       expect(restored.pricePerDay, car.pricePerDay);
+    });
+  });
+
+  group('owner', () {
+    test('reads the owner fields', () {
+      final car = Car.fromMap({
+        'model': 'a',
+        'ownerName': 'Aisha Rahman',
+        'ownerPhotoUrl': 'https://example.test/a.jpg',
+        'ownerVerified': true,
+      });
+
+      expect(car.ownerName, 'Aisha Rahman');
+      expect(car.ownerPhotoUrl, 'https://example.test/a.jpg');
+      expect(car.ownerVerified, isTrue);
+    });
+
+    test('leaves the owner null when the document does not say', () {
+      // The UI shows a neutral placeholder rather than inventing a person,
+      // which is what the hardcoded owner tile used to do.
+      final car = Car.fromMap({'model': 'a'});
+
+      expect(car.ownerName, isNull);
+      expect(car.ownerPhotoUrl, isNull);
+      expect(car.ownerVerified, isFalse);
+    });
+
+    test('an empty owner name reads as absent', () {
+      expect(Car.fromMap({'model': 'a', 'ownerName': ''}).ownerName, isNull);
     });
   });
 }

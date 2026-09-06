@@ -25,7 +25,8 @@ class PriceBreakdown extends StatelessWidget {
           value: PriceQuote.format(quote.serviceFeeCents),
         ),
         _Line(
-          label: quote.deliveryWaived ? 'Delivery (free over a week)' : 'Delivery',
+          label:
+              quote.deliveryWaived ? 'Delivery (free over a week)' : 'Delivery',
           value: quote.deliveryWaived
               ? 'Free'
               : PriceQuote.format(quote.deliveryFeeCents),

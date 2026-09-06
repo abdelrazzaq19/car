@@ -103,4 +103,72 @@ void main() {
     expect(cancelled.id, build().id);
     expect(cancelled.start, build().start);
   });
+
+  group('status derived from the dates', () {
+    final now = DateTime(2026, 9, 5);
+
+    Booking at(int startOffset, int endOffset, {BookingStatus? stored}) {
+      return Booking(
+        id: 'b1',
+        carId: 'car-1',
+        carModel: 'Tesla Model 3',
+        userId: 'u1',
+        start: now.add(Duration(days: startOffset)),
+        end: now.add(Duration(days: endOffset)),
+        totalCents: 19000,
+        depositCents: 20000,
+        status: stored ?? BookingStatus.confirmed,
+        createdAt: now,
+      );
+    }
+
+    test('a future booking stays as stored', () {
+      expect(at(2, 5).statusAt(now), BookingStatus.confirmed);
+    });
+
+    test('a booking under way reads as active', () {
+      expect(at(-1, 3).statusAt(now), BookingStatus.active);
+    });
+
+    test('a booking starting today reads as active', () {
+      expect(at(0, 3).statusAt(now), BookingStatus.active);
+    });
+
+    test('a finished booking reads as completed', () {
+      // Nothing ever writes `completed`, so this is derived.
+      expect(at(-10, -3).statusAt(now), BookingStatus.completed);
+    });
+
+    test('a booking ending today reads as completed', () {
+      expect(at(-3, 0).statusAt(now), BookingStatus.completed);
+    });
+
+    test('cancelled stays cancelled whatever the dates say', () {
+      expect(
+        at(-1, 3, stored: BookingStatus.cancelled).statusAt(now),
+        BookingStatus.cancelled,
+      );
+      expect(
+        at(2, 5, stored: BookingStatus.cancelled).statusAt(now),
+        BookingStatus.cancelled,
+      );
+    });
+
+    test('a past booking no longer holds its dates', () {
+      // The bug this fixes: it read "Confirmed" for ever and kept blocking.
+      expect(at(-10, -3).blocksAvailabilityAt(now), isFalse);
+    });
+
+    test('a current or future booking still holds its dates', () {
+      expect(at(-1, 3).blocksAvailabilityAt(now), isTrue);
+      expect(at(2, 5).blocksAvailabilityAt(now), isTrue);
+    });
+
+    test('cancellation is offered only before pick-up', () {
+      expect(at(2, 5).isCancellableAt(now), isTrue);
+      // Already driving away in it.
+      expect(at(-1, 3).isCancellableAt(now), isFalse);
+      expect(at(-10, -3).isCancellableAt(now), isFalse);
+    });
+  });
 }

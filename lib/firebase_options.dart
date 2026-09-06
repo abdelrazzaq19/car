@@ -83,5 +83,4 @@ class DefaultFirebaseOptions {
     authDomain: 'car-rental-app-naumanbutt2002.firebaseapp.com',
     storageBucket: 'car-rental-app-naumanbutt2002.appspot.com',
   );
-
 }

@@ -230,3 +230,64 @@ Analyze reports zero issues, 162 tests pass, and the web target builds. What has
 NOT been verified: a run against live Firestore, airplane-mode behaviour,
 TalkBack, and a contrast checker. Those need a device and a configured Firebase
 project with anonymous sign-in enabled.
+
+
+---
+
+## Post-plan hardening
+
+Work done after Phase 3, closing gaps that the plan never covered.
+
+### Booking status without a server — DONE
+
+- [x] `Booking.statusAt(now)` derives `active` and `completed` from the dates.
+
+Nothing ever wrote those statuses — there is no scheduled job — so a rental that
+finished last year still read "Confirmed" and, worse, kept holding its dates
+against a rebooking through `blocksAvailability`. The derivation now feeds the
+availability query, the My Bookings split, the status chip and whether cancel is
+offered.
+
+The evaluation time is carried on `MyBookingsLoaded.asOf` rather than each
+widget calling `DateTime.now()`, so the UI and the split cannot disagree and the
+clock stays injectable in tests. Ten tests cover the transitions.
+
+### Security rules — WRITTEN, NOT DEPLOYED
+
+- [x] `firestore.rules` and `firestore.indexes.json`, wired into `firebase.json`.
+- [ ] **Deploy them.** Until `firebase deploy --only firestore:rules` is run, the
+      database uses whatever the console has, which for a new project is often
+      wide open.
+
+### Owner data — DONE
+
+- [x] `ownerName`, `ownerPhotoUrl` and `ownerVerified` on `Car`, read from
+      Firestore. Absent shows "Listed by the fleet" instead of the hardcoded
+      "naumanbutt2002 · Verified host" that appeared on every car.
+
+### Android build — FIXED
+
+- [x] The Android build was broken outright: Gradle 7.6.3 cannot run on the
+      Java 25 that Flutter uses here, and Firebase 4.x needs AGP 8+.
+
+Now on Gradle 9.1.0, AGP 8.13.0, Kotlin 2.3.20, google-services 4.4.4, Java 11
+source/target. `flutter build apk --debug` succeeds.
+
+Note `android.newDsl=false` is deliberate: Flutter 3.47's Gradle plugin still
+reads AGP's legacy DSL and fails casting `ApplicationExtensionImpl` to
+`AbstractAppExtension` under AGP 9. Revisit when Flutter supports AGP 9.
+
+### CI — DONE
+
+- [x] `.github/workflows/ci.yml`: format check, `analyze --fatal-infos`, tests,
+      plus debug APK and web builds on every push and pull request.
+
+### Still open
+
+- [ ] **Payment.** The breakdown shows "charged today" and nothing is charged.
+      Needs a provider account and a decision on scope.
+- [ ] Deploy the security rules (above).
+- [ ] Run the booking flow against live Firestore with anonymous sign-in enabled.
+- [ ] TalkBack, contrast check and airplane-mode run on a device.
+- [ ] Localisation; strings are hardcoded English.
+- [ ] Real car photos; every card falls back to the bundled asset.

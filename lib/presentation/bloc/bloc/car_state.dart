@@ -69,8 +69,9 @@ class CarsLoaded extends CarState {
       query: query ?? this.query,
       favourites: favourites ?? this.favourites,
       position: position ?? this.position,
-      locationFailure:
-          clearLocationFailure ? null : (locationFailure ?? this.locationFailure),
+      locationFailure: clearLocationFailure
+          ? null
+          : (locationFailure ?? this.locationFailure),
     );
   }
 

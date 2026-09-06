@@ -194,7 +194,6 @@ class _Badge extends StatelessWidget {
   }
 }
 
-
 class _FavouriteButton extends StatelessWidget {
   final String carId;
   final bool isFavourite;

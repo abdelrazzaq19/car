@@ -78,8 +78,8 @@ class _FilterSheetState extends State<FilterSheet> {
                           ChoiceChip(
                             label: Text(sort.label),
                             selected: _draft.sort == sort,
-                            onSelected: (_) =>
-                                setState(() => _draft = _draft.copyWith(sort: sort)),
+                            onSelected: (_) => setState(
+                                () => _draft = _draft.copyWith(sort: sort)),
                           ),
                       ],
                     ),

@@ -49,14 +49,17 @@ class MyBookingsView extends StatelessWidget {
                   body: message,
                   onRetry: () => context.read<MyBookingsCubit>().load(),
                 ),
-              MyBookingsLoaded(:final upcoming, :final past) => TabBarView(
+              MyBookingsLoaded(:final upcoming, :final past, :final asOf) =>
+                TabBarView(
                   children: [
                     _BookingList(
+                      asOf: asOf,
                       bookings: upcoming,
                       emptyTitle: 'No upcoming bookings',
                       emptyBody: 'Cars you book will appear here.',
                     ),
                     _BookingList(
+                      asOf: asOf,
                       bookings: past,
                       emptyTitle: 'Nothing here yet',
                       emptyBody: 'Past and cancelled bookings appear here.',
@@ -72,11 +75,13 @@ class MyBookingsView extends StatelessWidget {
 }
 
 class _BookingList extends StatelessWidget {
+  final DateTime asOf;
   final List<Booking> bookings;
   final String emptyTitle;
   final String emptyBody;
 
   const _BookingList({
+    required this.asOf,
     required this.bookings,
     required this.emptyTitle,
     required this.emptyBody,
@@ -99,7 +104,7 @@ class _BookingList extends StatelessWidget {
         itemCount: bookings.length,
         separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
         itemBuilder: (context, index) =>
-            _BookingCard(booking: bookings[index]),
+            _BookingCard(booking: bookings[index], asOf: asOf),
       ),
     );
   }
@@ -107,8 +112,9 @@ class _BookingList extends StatelessWidget {
 
 class _BookingCard extends StatelessWidget {
   final Booking booking;
+  final DateTime asOf;
 
-  const _BookingCard({required this.booking});
+  const _BookingCard({required this.booking, required this.asOf});
 
   static final _dateFormat = DateFormat('d MMM yyyy');
 
@@ -133,7 +139,7 @@ class _BookingCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm),
-                _StatusChip(status: booking.status),
+                _StatusChip(status: booking.statusAt(asOf)),
               ],
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -150,7 +156,7 @@ class _BookingCard extends StatelessWidget {
               '${PriceQuote.format(booking.totalCents)}',
               style: theme.textTheme.bodyMedium,
             ),
-            if (booking.status.isCancellable) ...[
+            if (booking.isCancellableAt(asOf)) ...[
               const SizedBox(height: AppSpacing.sm),
               Align(
                 alignment: Alignment.centerRight,
@@ -205,7 +211,10 @@ class _StatusChip extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     final (background, foreground) = switch (status) {
-      BookingStatus.cancelled => (scheme.errorContainer, scheme.onErrorContainer),
+      BookingStatus.cancelled => (
+          scheme.errorContainer,
+          scheme.onErrorContainer
+        ),
       BookingStatus.completed => (
           scheme.surfaceContainerHighest,
           scheme.onSurfaceVariant

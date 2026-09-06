@@ -26,7 +26,8 @@ abstract final class Routes {
   static const bookings = '/bookings';
   static const bookingConfirmed = '/bookings/confirmed';
 
-  static String carDetailsFor(String carId) => '/cars/${Uri.encodeComponent(carId)}';
+  static String carDetailsFor(String carId) =>
+      '/cars/${Uri.encodeComponent(carId)}';
   static String carMapFor(String carId) =>
       '/cars/${Uri.encodeComponent(carId)}/map';
 }

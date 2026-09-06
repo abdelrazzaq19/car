@@ -120,7 +120,8 @@ void main() {
     });
 
     test('rejects an exactly overlapping window', () async {
-      final repository = repositoryWith([booking(startOffset: 1, endOffset: 4)]);
+      final repository =
+          repositoryWith([booking(startOffset: 1, endOffset: 4)]);
 
       expect(
         () => book(repository, period(1, 4)),
@@ -129,7 +130,8 @@ void main() {
     });
 
     test('rejects a partially overlapping window', () async {
-      final repository = repositoryWith([booking(startOffset: 1, endOffset: 5)]);
+      final repository =
+          repositoryWith([booking(startOffset: 1, endOffset: 5)]);
 
       expect(
         () => book(repository, period(3, 8)),
@@ -138,7 +140,8 @@ void main() {
     });
 
     test('rejects a window that swallows an existing booking', () async {
-      final repository = repositoryWith([booking(startOffset: 3, endOffset: 5)]);
+      final repository =
+          repositoryWith([booking(startOffset: 3, endOffset: 5)]);
 
       expect(
         () => book(repository, period(1, 10)),
@@ -147,7 +150,8 @@ void main() {
     });
 
     test('allows a window starting the day another ends', () async {
-      final repository = repositoryWith([booking(startOffset: 1, endOffset: 4)]);
+      final repository =
+          repositoryWith([booking(startOffset: 1, endOffset: 4)]);
 
       await expectLater(book(repository, period(4, 7)), completes);
     });
@@ -204,7 +208,8 @@ void main() {
     });
 
     test('the exception carries the clashing window', () async {
-      final repository = repositoryWith([booking(startOffset: 1, endOffset: 4)]);
+      final repository =
+          repositoryWith([booking(startOffset: 1, endOffset: 4)]);
 
       try {
         await book(repository, period(2, 3));

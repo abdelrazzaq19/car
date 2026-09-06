@@ -50,3 +50,9 @@ app.*.map.json
 .node_modules/
 ./firebase.json
 ./.firebaserc
+
+# Gradle build output. The root /build/ rule does not cover the android module,
+# whose buildDir is redirected there by android/build.gradle.
+/android/build/
+/android/.kotlin/
+/android/.gradle/

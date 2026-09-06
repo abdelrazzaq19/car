@@ -19,9 +19,8 @@ class MapsDetailPage extends StatelessWidget {
 
   const MapsDetailPage({super.key, required this.car});
 
-  LatLng get _center => car.hasLocation
-      ? LatLng(car.latitude!, car.longitude!)
-      : fallbackCenter;
+  LatLng get _center =>
+      car.hasLocation ? LatLng(car.latitude!, car.longitude!) : fallbackCenter;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +62,8 @@ class MapsDetailPage extends StatelessWidget {
                 ),
                 children: [
                   TileLayer(
-                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: 'com.example.car_rental_app',
                   ),
                   MarkerLayer(
@@ -181,7 +181,8 @@ class _ApproximateLocationBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline, size: 18, color: scheme.onSecondaryContainer),
+          Icon(Icons.info_outline,
+              size: 18, color: scheme.onSecondaryContainer),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(

@@ -26,6 +26,8 @@ const _cars = <String, Map<String, dynamic>>{
     'rating': 4.8,
     'reviewCount': 126,
     'available': true,
+    'ownerName': 'Aisha Rahman',
+    'ownerVerified': true,
   },
   'bmw-m4-competition': {
     'model': 'BMW M4 Competition',
@@ -41,6 +43,8 @@ const _cars = <String, Map<String, dynamic>>{
     'rating': 4.6,
     'reviewCount': 83,
     'available': true,
+    'ownerName': 'Daniel Okoro',
+    'ownerVerified': true,
   },
   'audi-a5-sportback': {
     'model': 'Audi A5 Sportback',
@@ -56,6 +60,8 @@ const _cars = <String, Map<String, dynamic>>{
     'rating': 4.4,
     'reviewCount': 51,
     'available': true,
+    'ownerName': 'Priya Nair',
+    'ownerVerified': false,
   },
   'toyota-corolla-hybrid': {
     'model': 'Toyota Corolla Hybrid',
@@ -71,6 +77,8 @@ const _cars = <String, Map<String, dynamic>>{
     'rating': 4.7,
     'reviewCount': 204,
     'available': true,
+    'ownerName': 'Aisha Rahman',
+    'ownerVerified': true,
   },
   'ford-ranger-wildtrak': {
     'model': 'Ford Ranger Wildtrak',
@@ -87,6 +95,8 @@ const _cars = <String, Map<String, dynamic>>{
     'reviewCount': 37,
     // Demonstrates the "Booked" badge and the disabled booking button.
     'available': false,
+    'ownerName': 'Marek Kowalski',
+    'ownerVerified': false,
   },
 };
 

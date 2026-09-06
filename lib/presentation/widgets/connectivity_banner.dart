@@ -26,8 +26,7 @@ class _ConnectivityBannerState extends State<ConnectivityBanner> {
   void initState() {
     super.initState();
 
-    final stream =
-        widget.stream ?? Connectivity().onConnectivityChanged;
+    final stream = widget.stream ?? Connectivity().onConnectivityChanged;
 
     _subscription = stream.listen(
       (results) => _update(results),

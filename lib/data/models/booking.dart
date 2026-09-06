@@ -24,12 +24,17 @@ enum BookingStatus {
         BookingStatus.cancelled => 'Cancelled',
       };
 
-  /// A cancelled booking frees its dates, so it must not block a rebooking.
+  /// A cancelled or finished booking frees its dates, so it must not block a
+  /// rebooking.
   bool get blocksAvailability =>
       this != BookingStatus.cancelled && this != BookingStatus.completed;
 
   bool get isCancellable =>
       this == BookingStatus.pending || this == BookingStatus.confirmed;
+
+  /// True once the booking is over, whether it ran or was called off.
+  bool get isFinished =>
+      this == BookingStatus.completed || this == BookingStatus.cancelled;
 }
 
 class Booking extends Equatable {
@@ -90,15 +95,37 @@ class Booking extends Equatable {
 
   int get days => period.days;
 
-  bool get isUpcoming =>
-      status.isCancellable && end.isAfter(RentalPeriod.dateOnly(DateTime.now()));
+  /// The status as it actually stands today.
+  ///
+  /// Nothing writes `active` or `completed` — there is no server job moving
+  /// bookings along — so those are derived from the dates. Without this, a
+  /// rental that finished last year still reads "Confirmed" and keeps holding
+  /// its dates against a rebooking.
+  BookingStatus statusAt(DateTime now) {
+    if (status.isFinished) return status;
+
+    final today = RentalPeriod.dateOnly(now);
+
+    if (!end.isAfter(today)) return BookingStatus.completed;
+    if (!start.isAfter(today)) return BookingStatus.active;
+
+    return status;
+  }
+
+  /// Whether this booking still holds its dates as of [now].
+  bool blocksAvailabilityAt(DateTime now) => statusAt(now).blocksAvailability;
+
+  /// Cancellation is only offered before the car has been picked up.
+  bool isCancellableAt(DateTime now) => statusAt(now).isCancellable;
+
+  bool isUpcomingAt(DateTime now) => isCancellableAt(now);
 
   /// Short human-quotable code, e.g. "CR-4F2A9B". Derived from the document id
   /// so it needs no separate counter and cannot collide.
   String get reference {
     final source = id.isEmpty ? carId : id;
-    final digest =
-        source.codeUnits.fold<int>(7, (acc, unit) => (acc * 31 + unit) & 0xFFFFFF);
+    final digest = source.codeUnits
+        .fold<int>(7, (acc, unit) => (acc * 31 + unit) & 0xFFFFFF);
     return 'CR-${digest.toRadixString(16).toUpperCase().padLeft(6, '0')}';
   }
 

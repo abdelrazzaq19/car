@@ -55,7 +55,7 @@ Depends on: Checkpoint A
 - [x] Migrate `MapOptions(center:, zoom:)` to `initialCenter:` / `initialZoom:`.
 - [x] Add shared_preferences, intl, cached_network_image, equatable, google_fonts, shimmer.
 - [ ] Add firebase_auth and geolocator — deferred to Phase 2 / T3.3, where they are first used.
-- [ ] Add go_router — see T1.3 below.
+- [x] Add go_router — see T1.3 below.
 
 Acceptance criteria: `flutter pub outdated` shows no direct dependency a major version behind; the map renders and pans.
 Verify: `flutter pub get`, `flutter analyze`, run the app and open the map page.
@@ -77,15 +77,28 @@ wrong there; and the shimmer skeleton needs an opaque mask colour. Every other
 surface reads from `Theme.of(context).colorScheme`.
 Verify: grep for colour literals; screenshots in light and dark.
 
-### T1.3 — Routing — NOT DONE, deferred
+### T1.3 — Routing — DONE
 Depends on: T1.1
 
-- [ ] `go_router` config with named routes for onboarding, list, detail, map.
-- [ ] Replace every `Navigator.push`.
+- [x] `go_router` config with named routes for onboarding, list, detail, map,
+      bookings and booking confirmation.
+- [x] Replaced every `Navigator.push`. The remaining `Navigator.pop` calls are
+      dialogs and modal sheets returning a value, which are not routes.
 
-Deferred deliberately: routing is only worth changing once there are screens
-worth deep-linking to (booking, My Bookings), which arrive in Phase 2. The app
-still uses `Navigator.push`.
+Car detail and its map are addressed by car id (`/cars/:carId`), not by passing
+a `Car` object, so a link survives a cold start. `_CarRoute` resolves the id
+against the loaded list: it waits while the list is still loading rather than
+showing "not found" for a car that exists, and shows a proper not-found screen
+for an id that does not.
+
+The booking confirmation route carries its `Booking` in `extra` and falls back
+to the bookings list when opened cold, since a receipt has nothing to show
+without one.
+
+Verified: 14 router tests covering deep links, unknown ids, unmatched paths, the
+cold-link wait, back navigation and the confirmation fallback. Also checked in a
+browser against live Firestore — `/#/cars` loads real data and the URL tracks
+the route.
 
 Acceptance criteria: each screen is reachable by route name; the Android back button behaves correctly.
 Verify: navigate the whole app; test deep links via `adb shell am start`.
@@ -102,7 +115,7 @@ Depends on: T1.2
 Acceptance criteria: all new fields tolerate absence; the price unit is identical on every screen; `Car` instances compare by value.
 Verify: extend `car_test.dart`; run against seeded data.
 
-**Checkpoint B — DONE except T1.3** — builds on the new dependencies, both themes correct, screens work against the widened model. Routing deferred to Phase 2.
+**Checkpoint B — DONE** — builds on the new dependencies, both themes correct, screens work against the widened model. Routing (T1.3) landed after Phase 3.
 
 ---
 

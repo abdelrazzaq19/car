@@ -13,6 +13,10 @@ class StatusView extends StatelessWidget {
   /// "Clear filters".
   final String? actionLabel;
 
+  /// Defaults to a refresh arrow. Set it alongside [actionLabel] so the icon
+  /// matches the action rather than contradicting it.
+  final IconData? actionIcon;
+
   const StatusView({
     super.key,
     required this.icon,
@@ -20,6 +24,7 @@ class StatusView extends StatelessWidget {
     required this.body,
     this.onRetry,
     this.actionLabel,
+    this.actionIcon,
   });
 
   @override
@@ -58,9 +63,7 @@ class StatusView extends StatelessWidget {
                     const SizedBox(height: AppSpacing.lg),
                     FilledButton.icon(
                       onPressed: onRetry,
-                      icon: Icon(
-                        actionLabel == null ? Icons.refresh : Icons.filter_alt_off,
-                      ),
+                      icon: Icon(actionIcon ?? Icons.refresh),
                       label: Text(actionLabel ?? 'Try again'),
                     ),
                   ],

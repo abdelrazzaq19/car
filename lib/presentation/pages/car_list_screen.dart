@@ -129,6 +129,8 @@ class _AllCarsTab extends StatelessWidget {
                       : 'Nothing is listed for rent right now. '
                           'Pull down to refresh.',
                   actionLabel: state.filteredToNothing ? 'Clear filters' : null,
+                  actionIcon:
+                      state.filteredToNothing ? Icons.filter_alt_off : null,
                   onRetry: state.filteredToNothing
                       ? () => bloc.add(ClearFilters())
                       : () => bloc.add(LoadCars()),

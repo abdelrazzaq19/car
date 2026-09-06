@@ -88,6 +88,7 @@ GoRouter buildRouter({String initialLocation = Routes.onboarding}) {
         title: 'That page does not exist',
         body: 'The link "${state.uri}" did not match anything in the app.',
         actionLabel: 'Browse cars',
+        actionIcon: Icons.directions_car_outlined,
         onRetry: () => context.go(Routes.cars),
       ),
     ),
@@ -136,6 +137,7 @@ class _CarRoute extends StatelessWidget {
                   title: 'Car not found',
                   body: 'This listing may have been removed.',
                   actionLabel: 'Browse cars',
+                  actionIcon: Icons.directions_car_outlined,
                   onRetry: () => context.go(Routes.cars),
                 ),
               );
